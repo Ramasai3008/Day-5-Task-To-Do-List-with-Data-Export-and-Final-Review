@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Task Application</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: white;
+        }
+
+        .container {
+            width: 700px;
+            margin: auto;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .high { border-left: 6px solid red; padding-left:10px; color:red;}
+        .medium { border-left: 6px solid orange; padding-left:10px; color:orange;}
+        .low { border-left: 6px solid green; padding-left:10px; color:green;}
+        .extra { border-left: 6px solid blue; padding-left:10px; color:blue;}
+
+        input {
+            width:100%;
+            padding:8px;
+            margin:5px 0;
+            border-radius:6px;
+            border:1px solid #ccc;
+        }
+
+        button {
+            padding:6px 10px;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+            margin:2px;
+            color:white;
+        }
+
+        .add { background:green;}
+        .delete { background:red;}
+        .edit { background:orange; color:black;}
+        .complete { background:purple;}
+        .filter { background:#333;}
+
+        ul { list-style:none; padding:0;}
+        li {
+            background:#f1f1f1;
+            margin:6px 0;
+            padding:8px;
+            border-radius:6px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            background:#c8e6c9;
+        }
+
+        .date {
+            font-size:12px;
+            color:gray;
+        }
+
+        .hidden { display:none; }
+
+    </style>
+</head>
+
+<body>
+
+<h2>Advanced Task Manager</h2>
+
+<div class="container">
+<div class="box">
+
+<!-- SEARCH -->
+<input type="text" id="searchBox" placeholder="Search Task Number (1-4)" onkeyup="searchTask()">
+
+<!-- FILTER BUTTONS -->
+<button class="filter" onclick="filterTasks('all')">All</button>
+<button class="filter" onclick="filterTasks('completed')">Completed</button>
+<button class="filter" onclick="filterTasks('pending')">Pending</button>
+
+<hr>
+
+<!-- Task 1 -->
+<div id="task1" class="task-section">
+<h3 class="high">Task-1 (High Priority)</h3>
+<input type="text" placeholder="Name">
+<input type="text" placeholder="Phone">
+<input type="email" placeholder="Email">
+<p class="date" id="date1"></p>
+<button class="complete" onclick="toggleComplete('task1')">Mark Completed</button>
+</div>
+
+<!-- Task 2 -->
+<div id="task2" class="task-section">
+<h3 class="medium">Task-2 (Medium Priority)</h3>
+<input type="text" id="eduInput" placeholder="Education">
+<button class="add" onclick="addEducation()">Add</button>
+<ul id="eduList"></ul>
+<p class="date" id="date2"></p>
+<button class="complete" onclick="toggleComplete('task2')">Mark Completed</button>
+</div>
+
+<!-- Task 3 -->
+<div id="task3" class="task-section">
+<h3 class="low">Task-3 (Low Priority - Resume)</h3>
+<input type="file" id="resume" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.json,.csv">
+<p id="fileName"></p>
+<p class="date" id="date3"></p>
+<button class="complete" onclick="toggleComplete('task3')">Mark Completed</button>
+</div>
+
+<!-- Task 4 -->
+<div id="task4" class="task-section">
+<h3 class="extra">Task-4 (Additional Info)</h3>
+<input type="text" id="infoInput" placeholder="Additional Info">
+<button class="add" onclick="addInfo()">Add</button>
+<ul id="infoList"></ul>
+<p class="date" id="date4"></p>
+<button class="complete" onclick="toggleComplete('task4')">Mark Completed</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+    /* ===== Auto Date ===== */
+    const today = new Date().toLocaleDateString();
+    document.getElementById("date1").innerText = "Created: " + today;
+    document.getElementById("date2").innerText = "Created: " + today;
+    document.getElementById("date3").innerText = "Created: " + today;
+    document.getElementById("date4").innerText = "Created: " + today;
+
+    /* ===== Mark Completed ===== */
+    function toggleComplete(id) {
+        document.getElementById(id).classList.toggle("completed");
+    }
+
+    /* ===== Filter ===== */
+    function filterTasks(type) {
+        const tasks = document.querySelectorAll(".task-section");
+
+        tasks.forEach(task => {
+            if (type === "all") {
+                task.classList.remove("hidden");
+            }
+            else if (type === "completed") {
+                task.classList.toggle("hidden", !task.classList.contains("completed"));
+            }
+            else if (type === "pending") {
+                task.classList.toggle("hidden", task.classList.contains("completed"));
+            }
+        });
+    }
+
+    /* ===== Search by Task Number ===== */
+    function searchTask() {
+        const value = document.getElementById("searchBox").value.trim();
+        const tasks = document.querySelectorAll(".task-section");
+
+        tasks.forEach((task, index) => {
+            if (value === "") {
+                task.classList.remove("hidden");
+            } else {
+                task.classList.toggle("hidden", (index + 1).toString() !== value);
+            }
+        });
+    }
+
+    /* ===== Task 2 Add ===== */
+    function addEducation() {
+        const input = document.getElementById("eduInput");
+        if (!input.value.trim()) return;
+
+        const li = document.createElement("li");
+        li.innerHTML = input.value + " <button class='delete' onclick='this.parentElement.remove()'>Delete</button>";
+        document.getElementById("eduList").appendChild(li);
+        input.value = "";
+    }
+
+    /* ===== Task 4 Add/Edit/Delete ===== */
+    function addInfo() {
+        const input = document.getElementById("infoInput");
+        if (!input.value.trim()) return;
+
+        const li = document.createElement("li");
+        const span = document.createElement("span");
+        span.textContent = input.value;
+
+        const edit = document.createElement("button");
+        edit.textContent = "Edit";
+        edit.className = "edit";
+        edit.onclick = function() {
+            const newText = prompt("Edit:", span.textContent);
+            if (newText) span.textContent = newText;
+        };
+
+        const del = document.createElement("button");
+        del.textContent = "Delete";
+        del.className = "delete";
+        del.onclick = function() {
+            li.remove();
+        };
+
+        li.appendChild(span);
+        li.appendChild(edit);
+        li.appendChild(del);
+        document.getElementById("infoList").appendChild(li);
+        input.value = "";
+    }
+
+    /* ===== Resume File Name ===== */
+    document.getElementById("resume").addEventListener("change", function() {
+        if (this.files.length > 0)
+            document.getElementById("fileName").innerText = "Selected: " + this.files[0].name;
+    });
+
+</script>
+
+</body>
+</html>
